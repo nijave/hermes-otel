@@ -40,6 +40,68 @@ never `agent.model`. Timestamps come from payload `started_at`/`ended_at`, not c
 wall-clock. Subagent handlers are v1 no-ops: child sessions emit their own session-scoped
 trees through their own hooks.
 
+## Build & install from source
+
+Prerequisites: Python >= 3.10, git, and a working Hermes Agent install.
+Docker is only needed for the optional wire-level E2E.
+
+### 1. Build and test
+
+```bash
+git clone https://github.com/nijave/hermes-otel.git
+cd hermes-otel
+python3 -m venv .venv
+.venv/bin/pip install -r requirements-dev.txt
+.venv/bin/python -m pytest -q
+```
+
+Optional full-wire E2E (spins a real OpenTelemetry Collector and asserts the
+span dump in its stdout):
+
+```bash
+./scripts/e2e.sh        # artifacts land in out/spans.log
+```
+
+### 2. Install into Hermes
+
+Directory drop — no pip step:
+
+```bash
+mkdir -p ~/.hermes/plugins
+ln -s "$(pwd)" ~/.hermes/plugins/hermes-otel    # or: ./scripts/dev_install.sh
+```
+
+Enable the plugin (this is the consent boundary — nothing exports until it is
+enabled):
+
+```bash
+hermes plugins enable hermes-otel     # or add to plugins.enabled in config.yaml
+```
+
+### 3. Point it at a collector
+
+In your Hermes `config.yaml`:
+
+```yaml
+plugins:
+  entries:
+    hermes-otel:
+      settings:
+        endpoint: http://localhost:4318/v1/traces   # required for export
+        capture_mode: none            # none | sanitized | full
+        headers_env:                  # env-var NAME holding the token value
+          authorization: MY_OTLP_TOKEN
+```
+
+Store the token itself in `~/.hermes/.env` (secrets only):
+`MY_OTLP_TOKEN=<value>`.
+
+Restart your gateway/CLI session, then verify:
+
+```bash
+hermes plugins list               # hermes-otel listed as discovered/enabled
+```
+
 ## Install
 
 The plugin ships as a directory drop — no pip install required at runtime.
