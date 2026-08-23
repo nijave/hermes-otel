@@ -6,6 +6,27 @@ import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
+# Sibling hermes-agent checkout. Local dev uses the true sibling; CI checks
+# it out inside the workspace (actions/checkout resolves `path:` against
+# $GITHUB_WORKSPACE). Try both, env var first.
+_HERMES_AGENT_CANDIDATES = [
+    os.environ.get("HERMES_AGENT_SIBLING"),
+    str(REPO_ROOT.parent / "hermes-agent"),
+    str(REPO_ROOT / "hermes-agent"),
+]
+HERMES_AGENT_CHECKOUT = next(
+    (Path(c) for c in _HERMES_AGENT_CANDIDATES if c and Path(c).is_dir()),
+    REPO_ROOT.parent / "hermes-agent",
+)
+
+
+@pytest.fixture(scope="session", autouse=True)
+def _hermes_agent_on_path():
+    """Make `import hermes_cli` resolve without per-test path surgery."""
+    if HERMES_AGENT_CHECKOUT.is_dir():
+        sys.path.insert(0, str(HERMES_AGENT_CHECKOUT))
+    yield
+
 
 @pytest.fixture
 def plugin_env(tmp_path, monkeypatch):

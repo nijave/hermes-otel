@@ -7,12 +7,7 @@ import pytest
 
 pytest.importorskip("yaml")
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
-HERMES_AGENT_CHECKOUT = REPO_ROOT.parent / "hermes-agent"
-
-
 def test_plugin_discovered_and_registered(plugin_env):
-    sys.path.insert(0, str(HERMES_AGENT_CHECKOUT))
     from hermes_cli.plugins import PluginManager
 
     pm = PluginManager()
