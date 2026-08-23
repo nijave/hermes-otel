@@ -1,0 +1,25 @@
+name: hermes-otel
+version: 0.1.0
+description: OpenTelemetry OTLP tracing of Hermes agent sessions and LLM calls
+author: nick
+license: Apache-2.0
+kind: standalone
+tags: [observability, tracing, opentelemetry]
+provides_hooks:
+  - pre_api_request
+  - post_api_request
+  - api_request_error
+  - pre_tool_call
+  - post_tool_call
+  - subagent_start
+  - subagent_stop
+  - on_session_finalize
+  - on_session_end
+python_dependencies:
+  - opentelemetry-sdk>=1.39.1,<2
+  - opentelemetry-exporter-otlp-proto-http>=1.39.1,<2
+requires_env:
+  - name: OTEL_EXPORT_TOKEN
+    description: Bearer token value sent as the configured OTLP export auth header
+    url: https://opentelemetry.io/docs/specs/otel/protocol/exporter/
+    secret: true
