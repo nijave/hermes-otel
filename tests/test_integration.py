@@ -10,14 +10,9 @@ from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import SimpleSpanProcessor
 from opentelemetry.sdk.trace.export.in_memory_span_exporter import InMemorySpanExporter
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
-HERMES_AGENT_CHECKOUT = REPO_ROOT.parent / "hermes-agent"
-
-
 @pytest.fixture
 def wired(plugin_env, monkeypatch):
     """Load plugin through REAL discovery, swap in in-memory provider."""
-    monkeypatch.syspath_prepend(str(HERMES_AGENT_CHECKOUT))
     from hermes_cli.plugins import get_plugin_manager
 
     exp = InMemorySpanExporter()
