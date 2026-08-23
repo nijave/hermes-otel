@@ -42,17 +42,24 @@ trees through their own hooks.
 
 ## Install
 
-The plugin ships as a directory drop — no pip install required at runtime.
-Symlink (or copy) this repo into your Hermes plugins directory:
+**One-command install (recommended):**
+
+```bash
+hermes plugins install nijave/hermes-otel
+```
+
+Hermes clones the repo into `~/.hermes/plugins/hermes-otel` and runs its
+security scan. The scan reports a handful of **benign, expected findings**
+(an `0.0.0.0:4318` bind address in the E2E collector config and doc text
+mentioning `.env`/`git clone`) and asks for confirmation on community
+sources — reviewing and confirming is the intended flow.
+
+**Manual alternative** (directory drop — no pip install at runtime). Symlink
+or copy this repo into your Hermes plugins directory:
 
 ```bash
 ln -s /path/to/hermes-otel ~/.hermes/plugins/hermes-otel
-```
-
-Or run the helper script, which does exactly that:
-
-```bash
-./scripts/dev_install.sh
+# or: ./scripts/dev_install.sh
 ```
 
 Then add the plugin id to `plugins.enabled` in your `config.yaml` (see below).

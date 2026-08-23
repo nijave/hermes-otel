@@ -1,0 +1,57 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12"]
+    steps:
+      - name: Check out plugin
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262  # v4
+
+      # Integration tests import hermes_cli from the sibling hermes-agent
+      # checkout, exactly like local runs.
+      - name: Check out hermes-agent sibling
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262  # v4
+        with:
+          repository: NousResearch/hermes-agent
+          ref: main
+          path: hermes-agent
+          fetch-depth: 1
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065  # v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: requirements-dev.txt
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+
+      - name: Run tests
+        run: python -m pytest -q
+        env:
+          HERMES_AGENT_SIBLING: ${{ github.workspace }}/hermes-agent
+
+      - name: Plugin doctor
+        run: |
+          python - <<'PY'
+          import os, sys
+          sys.path.insert(0, os.environ["HERMES_AGENT_SIBLING"])
+          from hermes_cli.plugin_dev import doctor_plugin
+          report = doctor_plugin(os.getcwd())
+          print(report.format_text())
+          sys.exit(0 if report.ok else 1)
+          PY
