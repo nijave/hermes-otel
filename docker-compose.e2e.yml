@@ -1,0 +1,21 @@
+services:
+  otelcol:
+    build:
+      context: ./e2e
+      dockerfile: Dockerfile.collector
+    volumes:
+      - ./e2e/collector.yaml:/etc/collector.yaml:ro
+      - ./out:/out
+
+  e2e:
+    build: ./e2e
+    depends_on:
+      - otelcol
+    environment:
+      OTEL_ENDPOINT: http://otelcol:4318/v1/traces
+      PYTHONPATH: /hermes:/plugin
+    volumes:
+      - .:/plugin:ro
+      - /home/nick/Documents/workspace/3rd/hermes-agent:/hermes:ro
+      - ./out:/out
+    command: ["python", "/plugin/e2e/run_e2e.py"]

@@ -1,0 +1,7 @@
+# The upstream collector image is distroless (no shell), so wrap the same
+# pinned otelcol-contrib binary in Alpine to enable the stdout tee pipe.
+FROM otel/opentelemetry-collector-contrib:0.128.0 AS collector
+FROM alpine:3.20
+COPY --from=collector /otelcol-contrib /otelcol-contrib
+ENTRYPOINT ["/bin/sh", "-c"]
+CMD ["/otelcol-contrib --config=/etc/collector.yaml 2>&1 | tee /out/spans.log"]
