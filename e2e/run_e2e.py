@@ -85,6 +85,7 @@ invoke_hook(
     tool_call_id="c1",
     tool_name="terminal",
     args={},
+    started_at=1.5,
 )
 invoke_hook(
     "post_tool_call",
@@ -94,6 +95,7 @@ invoke_hook(
     tool_name="terminal",
     duration_ms=3,
     status="success",
+    ended_at=1.6,
 )
 invoke_hook(
     "post_api_request",

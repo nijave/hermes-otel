@@ -151,12 +151,13 @@ def _on_session_end(state, kw):
 
 def flush_and_reset() -> None:
     """Flush + shutdown any live provider, then reset module state."""
-    global _state, _init_failed, provider, tracer
+    global _state, _settings, _init_failed, provider, tracer
     try:
         exporter.flush_shutdown(_module_self())
     except Exception:  # noqa: BLE001
         pass
     _state = None
+    _settings = None
     _init_failed = False
     provider = None
     tracer = None

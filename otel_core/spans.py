@@ -111,15 +111,16 @@ class TraceState:
 
     def _turn(self, tree: _Tree, kw: dict[str, Any]) -> Any:
         turn_id = kw.get("turn_id") or "unknown-turn"
-        span = tree.turns.get(turn_id)
-        if span is None:
-            span = self._tracer.start_span(
-                f"invoke_agent {kw.get('model') or 'unknown'}",
-                context=tree.context,
-                attributes=turn_attrs(kw),
-                start_time=_ns(kw.get("started_at")) or _now_ns(),
-            )
-            tree.turns[turn_id] = span
+        with self._lock:
+            span = tree.turns.get(turn_id)
+            if span is None:
+                span = self._tracer.start_span(
+                    f"invoke_agent {kw.get('model') or 'unknown'}",
+                    context=tree.context,
+                    attributes=turn_attrs(kw),
+                    start_time=_ns(kw.get("started_at")) or _now_ns(),
+                )
+                tree.turns[turn_id] = span
         return span
 
     def _emit_orphan_tool_span(self, kw: dict[str, Any], tree: _Tree | None) -> None:
@@ -158,7 +159,8 @@ class TraceState:
             attributes=chat_request_attrs(kw, self._capture_mode),
             start_time=_ns(kw.get("started_at")) or _now_ns(),
         )
-        tree.chats[kw.get("api_request_id") or ""] = (span, kw)
+        with self._lock:
+            tree.chats[kw.get("api_request_id") or ""] = (span, kw)
 
     def on_post_api_request(self, kw: dict[str, Any]) -> None:
         with self._lock:

@@ -155,16 +155,17 @@ def tool_end_attrs(kwargs: dict[str, Any], capture_mode: str) -> dict[str, Any]:
     return {k: v for k, v in attrs.items() if v is not None}
 
 
-def subagent_start_attrs(kwargs: dict[str, Any]) -> dict[str, Any]:
-    return {
-        k: v
-        for k, v in {
-            "hermes.child_session_id": kwargs.get("child_session_id"),
-            "hermes.role": kwargs.get("role"),
-            "hermes.goal": kwargs.get("goal"),
-        }.items()
-        if v is not None
+def subagent_start_attrs(kwargs: dict[str, Any], capture_mode: str = "none") -> dict[str, Any]:
+    attrs: dict[str, Any] = {
+        "hermes.child_session_id": kwargs.get("child_session_id"),
+        "hermes.role": kwargs.get("role"),
     }
+    goal = kwargs.get("goal")
+    if capture_mode == "sanitized" and goal:
+        attrs["hermes.goal"] = redact_text(str(goal))
+    elif capture_mode == "full" and goal:
+        attrs["hermes.goal"] = str(goal)
+    return {k: v for k, v in attrs.items() if v is not None}
 
 
 def subagent_stop_attrs(kwargs: dict[str, Any]) -> dict[str, Any]:

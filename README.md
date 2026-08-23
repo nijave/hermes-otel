@@ -29,9 +29,9 @@ Key attributes per span:
 
 | Span | Name | Key attributes |
 |---|---|---|
-| Session root | `invoke_agent hermes` | `gen_ai.agent.name=hermes`, `gen_ai.conversation.id=<session_id>`, `hermes.profile_name`, `hermes.platform` |
+| Session root | `invoke_agent hermes` | `gen_ai.agent.name=hermes`, `gen_ai.conversation.id=<session_id>`, `hermes.platform` |
 | Turn | `invoke_agent {model}` | `gen_ai.operation.name=invoke_agent`, `gen_ai.request.model`, `hermes.turn_id`, `hermes.parent_session_id` |
-| LLM call | `chat {model}` | `gen_ai.operation.name=chat`, `gen_ai.provider.name`, `gen_ai.request.model`, `gen_ai.response.model`, `gen_ai.response.id`, `gen_ai.response.finish_reasons[]`, token usage attrs, `hermes.api_request_id` |
+| LLM call | `chat {model}` | `gen_ai.operation.name=chat`, `gen_ai.provider.name`, `gen_ai.request.model`, `gen_ai.response.model`, `gen_ai.response.finish_reasons[]`, token usage attrs, `hermes.api_request_id` |
 | Tool call | `execute_tool {name}` | `gen_ai.tool.name`, `gen_ai.tool.call.id`, `hermes.duration_ms` |
 | Error leaf | same name as its opener | `status=ERROR`, re-redacted `error.type` / `error.message` |
 
