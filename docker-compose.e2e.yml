@@ -16,6 +16,7 @@ services:
       PYTHONPATH: /hermes:/plugin
     volumes:
       - .:/plugin:ro
-      - /home/nick/Documents/workspace/3rd/hermes-agent:/hermes:ro
+      # Override with HERMES_AGENT_DIR if the sibling checkout lives elsewhere.
+      - ${HERMES_AGENT_DIR:-../hermes-agent}:/hermes:ro
       - ./out:/out
     command: ["python", "/plugin/e2e/run_e2e.py"]
