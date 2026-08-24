@@ -207,6 +207,7 @@ End-to-end wire verification against a real OTel Collector with stdout assertion
   `TracerProvider` and never calls `trace.set_tracer_provider`, so it does not touch the
   global provider. Langfuse's instrumentation and hermes-otel export independently
   through their own providers — no interference either direction.
+- See docs/UPSTREAM_GAPS.md for capability gaps that require changes in Hermes core.
 
 ## Development
 
