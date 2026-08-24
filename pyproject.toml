@@ -16,8 +16,10 @@ dependencies = [
     "opentelemetry-exporter-otlp-proto-http>=1.39.1,<2",
 ]
 
-[project.entry-points."hermes_agent.plugins"]
-hermes-otel = "hermes_otel_entry"
+# Entry-point install is forward-looking until a real module ships; directory-drop
+# / `hermes plugins install nijave/hermes-otel` are the supported paths today.
+# [project.entry-points."hermes_agent.plugins"]
+# hermes-otel = "hermes_otel_entry"
 
 [project.optional-dependencies]
 dev = ["pytest>=8,<9", "pyyaml>=6,<7"]
